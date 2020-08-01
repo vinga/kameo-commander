@@ -1,0 +1,14 @@
+server.port: 8111
+
+logging:
+  pattern.console: "%clr(%d{HH:mm:ss.SSS}){magenta}%clr([%-5.5level][%t]){faint}%blue(%30.60(.\\(%file:%line\\))) %m%n%wEx"
+  level:
+    root: INFO
+    org.springframework: INFO
+
+commander:
+  commands:
+    foo: echo hello there, foo
+    build-exploresy: sudo /home/vinga/exploresy/ci/build-ci.sh
+
+
