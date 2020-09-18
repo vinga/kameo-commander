@@ -6,9 +6,67 @@ logging:
     root: INFO
     org.springframework: INFO
 
+
+spring:
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+
 commander:
   commands:
-    foo: echo hello there, foo
-    build-exploresy: sudo /home/vinga/exploresy/ci/build-ci.sh
+    -
+      name: foo
+      command: echo hello there, foo
+      aliases: foo-alias, foo-alias-another
+      tags: foos
+    -
+      name: foo2
+      command: foo2
+      tags: foos
 
+    -
+      name: stage/build-exploresy-frontend
+      command: sudo /home/vinga/exploresy/ci/scripts/stage-build-devapp.sh branch={branch}
+      aliases: build-exploresy-frontend,stage-build-exploresy-frontend
+      tags: exploresy-stage,exploresy
+      parameters:
+        - name: branch
+          defaultValue: master
+    -
+      name: stage/build-exploresy-backend
+      command: sudo /home/vinga/exploresy/ci/scripts/stage-build-backend.sh branch={branch}
+      aliases: build-exploresy-backend,stage-build-exploresy-backend
+      tags: exploresy-stage,exploresy
+      parameters:
+        -
+          name: branch
+          defaultValue: master
+    -
+      name: prod/build-exploresy-frontend
+      command: sudo /home/vinga/exploresy/ci/scripts/prod-build-devapp.sh branch={branch}
+      tags: exploresy-prod,exploresy
+      parameters:
+        - name: branch
+          defaultValue: ver-1.0.0
+    -
+      name: prod/build-exploresy-backend
+      command: sudo /home/vinga/exploresy/ci/scripts/prod-build-backend.sh branch={branch}
+      tags: exploresy-prod,exploresy
+      parameters:
+        - name: branch
+          defaultValue: ver-1.0.0
+
+  tags:
+    -
+      name: foos
+      publishList: true
+    -
+      name: exploresy
+      publishList: true
+    -
+      name: exploresy-prod
+      publishList: true
+    -
+      name: exploresy-stage
+      publishList: true
 

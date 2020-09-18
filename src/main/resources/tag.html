@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>${tagGroupName}</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <style>
+        a {
+            color: #00E4FF; text-decoration: none;
+            cursor: pointer;
+        }
+        a:hover {
+            color: #00a0b3;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" style="margin: 100px">
+    {{ tagGroupName }}<br/>
+
+    <ol :key="componentKey">
+        <li v-for="command in commands">
+            <div style="display: flex; min-width: 200px;">
+                <a v-on:click="executeCommand(command)" style="font-size: 20px;">{{ command.name }}</a>
+            </div>
+            <div>
+                <div>Command: {{command.command}}</div>
+                <div v-if="command.tags">Tags: {{command.tags}}</div>
+                <div v-if="command.aliases">Aliases: {{command.aliases}}</div>
+                <div v-if="command.runtimeInfo.lastExecution">LastExecution: {{command.runtimeInfo.lastExecution}}</div>
+
+                <div v-if="command.parameters">
+                    Parameters:
+                    <div v-for="parameter in command.parameters">
+                        <div>{{parameter.name}} <input v-model="parameter.defaultValue"></div>
+                    </div>
+                </div>
+
+                <div v-if="command.runtimeInfo.log">
+
+                    <a v-on:click="showLog(command)">Show log</a></div>
+                <div v-html="command.showingMessage"></div>
+
+
+            </div>
+</div>
+</li>
+</ol>
+</div>
+
+<script>
+
+    /*
+    {
+  "name" : "stage/build-exploresy-backend",
+  "aliases" : "build-exploresy-backend,stage-build-exploresy-backend",
+  "command" : "sudo /home/vinga/exploresy/ci/scripts/stage-build-backend.sh",
+  "tags" : "exploresy-stage,exploresy",
+  "runtimeInfo" : {
+    "lastExecution" : null,
+    "log" : null
+  }
+}
+     */
+    var app = new Vue({
+        el: '#app',
+        data:  {
+            componentKey: 0,
+            tagGroupName : '${tagGroupName}',
+            commands: ${commands}
+        },
+        methods: {
+            showLog: function (command) {
+                if (command.showingMessage!=null) {
+                    command.showingMessage=null;
+                }
+                else
+                    command.showingMessage=command.runtimeInfo.log;
+                if (command.showingMessage!=null) {
+                    command.showingMessage = command.showingMessage.replace("\n", "<br>");
+                    command.showingMessage = command.showingMessage.replace("\r", "<br>");
+                }
+                this.componentKey+=1;
+            },
+
+            executeCommand: function(command) {
+                let queryParams="";
+                if (command.parameters!=null) {
+                    queryParams= "?"+command.parameters.map(function(param) {
+                        return [param.name, param.defaultValue].map(encodeURIComponent).join("=");
+                    }).join("&");
+
+                }
+
+                window.open("/commands/"+command.name+queryParams, '_blank');
+            }
+        }
+    })
+
+
+
+</script>
+</body>
+</html>
